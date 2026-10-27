@@ -34,8 +34,12 @@ function tab(api){$('studio').hidden=api;$('api').hidden=!api;$('studioTab').cla
 $('tryApi').onclick=async()=>{try{const r=await fetch('./frames.json');const data=await r.json();$('response').textContent=`HTTP ${r.status}\n`+JSON.stringify(data,null,2)}catch(e){$('response').textContent='Không kết nối được API mẫu. Vui lòng thử lại.'}};render();
 
 const aboutSection=$('about-us');
-function openAbout(event){event.preventDefault();tab(false);requestAnimationFrame(()=>{aboutSection.classList.add('is-visible');aboutSection.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});aboutSection.focus({preventScroll:true});history.replaceState(null,'','#about-us')})}
-document.querySelectorAll('a[href="#about-us"]').forEach(link=>link.addEventListener('click',openAbout));
-$('backToStudio').onclick=()=>{tab(false);window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});history.replaceState(null,'',location.pathname);$('studioTab').focus({preventScroll:true})};
-if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){aboutSection.classList.add('is-visible');observer.disconnect()}},{threshold:.08});aboutSection.classList.add('reveal-ready');observer.observe(aboutSection)}
-if(location.hash==='#about-us')openAbout({preventDefault(){}});
+let aboutScroll=0;
+function openAbout(event){event.preventDefault();if(aboutSection.open)return;aboutScroll=window.scrollY;aboutSection.showModal();aboutSection.scrollTop=0;document.body.style.overflow='hidden'}
+function closeAbout(){aboutSection.close()}
+document.querySelectorAll('a[href="#about-us"]').forEach(link=>{link.setAttribute('aria-haspopup','dialog');link.addEventListener('click',openAbout)});
+$('closeAbout').onclick=closeAbout;$('backToStudio').onclick=closeAbout;
+aboutSection.addEventListener('close',()=>{document.body.style.overflow='';window.scrollTo({top:aboutScroll,behavior:'instant'})});
+aboutSection.addEventListener('click',event=>{if(event.target===aboutSection){const box=aboutSection.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)closeAbout()}});
+// Old introduction links should not open the dialog until the logo is clicked.
+if(location.hash==='#about-us')history.replaceState(null,'',location.pathname+location.search);
