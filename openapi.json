@@ -1,0 +1,149 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "tKv. x VMT Photobooth — API proposal",
+    "version": "0.1.0",
+    "description": "Bản duyệt. Chỉ GET frames và health đã triển khai dưới dạng mock."
+  },
+  "servers": [
+    {
+      "url": "./"
+    }
+  ],
+  "paths": {
+    "/sessions": {
+      "post": {
+        "summary": "Tạo phiên chia sẻ",
+        "description": "Thiết kế đề xuất, chưa triển khai",
+        "responses": {
+          "201": {
+            "description": "Thành công"
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất"
+          }
+        }
+      }
+    },
+    "/sessions/{id}/photos": {
+      "post": {
+        "summary": "Upload ảnh",
+        "description": "Thiết kế đề xuất, chưa triển khai",
+        "responses": {
+          "201": {
+            "description": "Thành công"
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "photo"
+                ],
+                "properties": {
+                  "photo": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "JPEG/PNG/WebP tối đa 10 MB"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions/{id}/share": {
+      "post": {
+        "summary": "Tạo link chia sẻ trong 24 giờ",
+        "description": "Thiết kế đề xuất, chưa triển khai",
+        "responses": {
+          "201": {
+            "description": "Thành công"
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/sessions/{id}": {
+      "delete": {
+        "summary": "Xóa phiên và ảnh",
+        "description": "Thiết kế đề xuất, chưa triển khai",
+        "responses": {
+          "204": {
+            "description": "Thành công"
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/frames.json": {
+      "get": {
+        "summary": "Danh mục khung",
+        "description": "Mock đang chạy trên server local",
+        "responses": {
+          "200": {
+            "description": "Thành công"
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất"
+          }
+        }
+      }
+    },
+    "/health.json": {
+      "get": {
+        "summary": "Trạng thái server",
+        "description": "Mock đang chạy trên server local",
+        "responses": {
+          "200": {
+            "description": "Thành công"
+          },
+          "429": {
+            "description": "Quá giới hạn tần suất"
+          }
+        }
+      }
+    }
+  }
+}
