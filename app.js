@@ -29,17 +29,15 @@ $('closeCamera').onclick=stopCamera;$('cameraDialog').addEventListener('cancel',
 $('snap').onclick=async()=>{if(busy)return;busy=true;$('snap').disabled=true;const g=++generation,shots=[];try{for(let i=0;i<+$('layout').value;i++){for(let t=+$('delay').value;t>0;t--){$('cameraStatus').textContent=`Ảnh ${i+1}: ${t}…`;await new Promise(r=>setTimeout(r,1000));if(g!==generation)return}const v=$('video'),c=document.createElement('canvas');if(!v.videoWidth)throw Error('Camera chưa sẵn sàng');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(v,0,0);shots.push(await imageFrom(c.toDataURL()));$('cameraStatus').textContent=`Đã chụp ${i+1} ảnh`;await new Promise(r=>setTimeout(r,350));if(g!==generation)return}photos=shots;render();stopCamera();status('Đã chụp xong! Bạn có thể đổi khung và tải ảnh.')}catch(e){stopCamera();status(e.message)}finally{busy=false;$('snap').disabled=false}};
 $('reset').onclick=()=>{generation++;photos=[];frame=frames[0];filter='Original';$('layout').value='4';$('delay').value='3';$('caption').value='a little moment of us';document.querySelector('.frame').click();document.querySelector('.filters button').click();render();status('Đã làm mới studio.');};
 $('help').onclick=()=>$('helpDialog').showModal();$('closeHelp').onclick=()=>$('helpDialog').close();
-function tab(api){$('studio').hidden=api;$('api').hidden=!api;$('studioTab').classList.toggle('active',!api);$('apiTab').classList.toggle('active',api)}$('studioTab').onclick=()=>tab(false);$('apiTab').onclick=()=>tab(true);
+function tab(api){showPage(api?'api':'studio')}$('studioTab').onclick=()=>tab(false);$('apiTab').onclick=()=>tab(true);
 [['GET','/frames.json','Danh mục khung · mock đang chạy'],['GET','/health.json','Trạng thái server · đang chạy'],['POST','/api/v1/sessions','Tạo phiên chia sẻ · đề xuất'],['POST','/api/v1/sessions/{id}/photos','Upload ảnh · đề xuất'],['POST','/api/v1/sessions/{id}/share','Tạo link 24 giờ · đề xuất'],['DELETE','/api/v1/sessions/{id}','Xóa phiên và ảnh · đề xuất']].forEach(([m,p,d])=>{const row=document.createElement('div');row.className='endpoint';const code=document.createElement('code');code.textContent=m+' '+p;const desc=document.createElement('span');desc.textContent=d;row.append(code,desc);$('endpoints').append(row)});
 $('tryApi').onclick=async()=>{try{const r=await fetch('./frames.json');const data=await r.json();$('response').textContent=`HTTP ${r.status}\n`+JSON.stringify(data,null,2)}catch(e){$('response').textContent='Không kết nối được API mẫu. Vui lòng thử lại.'}};render();
 
 const aboutSection=$('about-us');
-let aboutScroll=0;
-function openAbout(event){event.preventDefault();if(aboutSection.open)return;aboutScroll=window.scrollY;aboutSection.showModal();aboutSection.scrollTop=0;document.body.style.overflow='hidden'}
-function closeAbout(){aboutSection.close()}
-document.querySelectorAll('a[href="#about-us"]').forEach(link=>{link.setAttribute('aria-haspopup','dialog');link.addEventListener('click',openAbout)});
-$('closeAbout').onclick=closeAbout;$('backToStudio').onclick=closeAbout;
-aboutSection.addEventListener('close',()=>{document.body.style.overflow='';window.scrollTo({top:aboutScroll,behavior:'instant'})});
-aboutSection.addEventListener('click',event=>{if(event.target===aboutSection){const box=aboutSection.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)closeAbout()}});
-// Old introduction links should not open the dialog until the logo is clicked.
-if(location.hash==='#about-us')history.replaceState(null,'',location.pathname+location.search);
+function showPage(page){for(const [name,button] of [['studio','studioTab'],['api','apiTab'],['about-us','aboutTab']]){$(name).hidden=name!==page;$(button).classList.toggle('active',name===page);$(button).setAttribute('aria-current',name===page?'page':'false')}window.scrollTo({top:0,behavior:'instant'});if(page==='about-us'){observeAbout();history.replaceState(null,'','#about-us')}else{history.replaceState(null,'',location.pathname+location.search)}}
+function openAbout(event){event.preventDefault();showPage('about-us')}
+document.querySelectorAll('a[href="#about-us"]').forEach(link=>link.addEventListener('click',openAbout));
+$('aboutTab').onclick=openAbout;$('backToStudio').onclick=()=>showPage('studio');
+let aboutObserver;
+function observeAbout(){if(aboutObserver)aboutObserver.disconnect();const targets=aboutSection.querySelectorAll('.about-heading,.about-photo,.about-copy > *');targets.forEach(el=>el.classList.remove('revealed'));if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){targets.forEach(el=>el.classList.add('revealed'));return}aboutObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('revealed');aboutObserver.unobserve(entry.target)}})},{threshold:.12});targets.forEach(el=>{el.classList.add('scroll-reveal');aboutObserver.observe(el)})}
+if(location.hash==='#about-us')showPage('about-us');
