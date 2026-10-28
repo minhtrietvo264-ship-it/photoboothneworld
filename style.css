@@ -20,3 +20,5 @@ header{position:sticky;top:0;z-index:20;background:#faf7f5f2;backdrop-filter:blu
 @media(prefers-reduced-motion:reduce){.entrance{display:none!important}.atelier-reveal{opacity:1;transform:none}.gate-leaf,.entrance-title{transition:none}html{scroll-behavior:auto}}
 
 .story-link{display:block;border:0;border-bottom:1px dashed #a78a5070;border-radius:0;padding:0 0 3px;font-size:11px;line-height:1.7;color:#747a62;text-align:left}.story-link:hover{color:#29483c;background:transparent}#storyTitle{font:30px "Playfair Display",Georgia,serif;margin:20px 0}#storyCopy{font-size:15px;line-height:2;margin-bottom:25px}.hero-copy h1 em{max-width:650px}
+
+.story-link{border-bottom:0}.story-hint{display:block;margin-top:5px;color:#47634f;font-size:10px;text-decoration:underline;text-underline-offset:3px}.story-inspiration{font-size:11px;color:#7d704e;line-height:1.7;border-bottom:1px solid var(--border);padding-bottom:14px}#storyDialog{max-height:85dvh;overflow:auto}#storyCopy p{font-size:14px;line-height:1.9;margin:15px 0}#storyTitle{font-size:29px;line-height:1.3}
