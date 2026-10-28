@@ -41,3 +41,19 @@ $('aboutTab').onclick=openAbout;$('backToStudio').onclick=()=>showPage('studio')
 let aboutObserver;
 function observeAbout(){if(aboutObserver)aboutObserver.disconnect();const targets=aboutSection.querySelectorAll('.about-heading,.about-photo,.about-copy > *');targets.forEach(el=>el.classList.remove('revealed'));if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches){targets.forEach(el=>el.classList.add('revealed'));return}aboutObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('revealed')}else{entry.target.classList.remove('revealed')}})},{threshold:.15,rootMargin:'0px 0px -40px 0px'});targets.forEach(el=>{el.classList.add('scroll-reveal');aboutObserver.observe(el)})}
 if(location.hash==='#about-us')showPage('about-us');
+
+// Progressive enhancement: the website remains usable without motion or JS.
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
+const entrance=$('entrance');let entranceTimer,entranceEnd;
+function finishEntrance(){clearTimeout(entranceTimer);clearTimeout(entranceEnd);entrance.hidden=true;entrance.classList.remove('opening');document.body.classList.remove('entering');document.querySelectorAll('body > header,body > main').forEach(el=>el.inert=false);revealVisible();}
+function openGates(){entrance.classList.add('opening');entranceEnd=setTimeout(finishEntrance,1700)}
+function playEntrance(){if(reducedMotion.matches)return;clearTimeout(entranceTimer);clearTimeout(entranceEnd);entrance.hidden=false;entrance.classList.remove('opening');document.body.classList.add('entering');document.querySelectorAll('body > header,body > main').forEach(el=>el.inert=true);$('skipEntrance').focus({preventScroll:true});entranceTimer=setTimeout(openGates,1050)}
+$('skipEntrance').onclick=finishEntrance;$('replayEntrance').onclick=playEntrance;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!entrance.hidden)finishEntrance()});
+function goToBooth(){$('booth').scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth',block:'start'})}
+$('enterStudio').onclick=goToBooth;$('scrollStudio').onclick=goToBooth;
+const revealTargets=document.querySelectorAll('.hero-copy > *, .hero-copy h1 > *, .arch-scene, .studio-heading > *, .step, .about-copy > p, .about-heading > *, .apicard > h2');
+let atelierObserver;
+function revealVisible(){if(reducedMotion.matches||!('IntersectionObserver' in window)){revealTargets.forEach(el=>el.classList.add('is-visible'));return}if(atelierObserver)atelierObserver.disconnect();atelierObserver=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible')}else{entry.target.classList.remove('is-visible')}})},{threshold:.12,rootMargin:'0px 0px -20px 0px'});revealTargets.forEach((el,i)=>{el.classList.add('atelier-reveal');el.style.setProperty('--reveal-delay',(i%3)*85+'ms');atelierObserver.observe(el)})}
+reducedMotion.addEventListener('change',()=>{finishEntrance();revealVisible()});
+revealVisible();if(!location.hash)playEntrance();
