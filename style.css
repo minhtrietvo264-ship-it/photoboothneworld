@@ -26,3 +26,6 @@ header{position:sticky;top:0;z-index:20;background:#faf7f5f2;backdrop-filter:blu
 .frame .mini{width:48px;padding:5px;gap:3px}.frame .mini i{height:23px;background-size:cover;background-position:center;background-color:#d8d4c8}.frame{font-size:9px;padding-top:11px}.frames{gap:8px}.stage-label{font-size:8px}#previewMode{font-weight:700}@media(max-width:400px){.frame .mini{width:40px}.frame .mini i{height:20px}.frames{gap:5px}}
 
 .sample-caption{font-size:9px;color:#7b7c6b;line-height:1.8;margin:12px 0 0}.sample-caption a{color:#65754e;text-underline-offset:3px}
+
+/* Larger photo preview with native-resolution canvas backing. */
+.paper canvas{width:240px;height:672px}.stage{height:825px}.frame .mini{width:58px}.frame .mini i{height:32px}.paper canvas{image-rendering:auto}@media(max-width:800px){.stage{height:760px}.paper canvas{width:220px;height:616px}}@media(max-width:400px){.frame .mini{width:46px}.frame .mini i{height:25px}.paper canvas{width:210px;height:588px}.stage{height:720px}}
